@@ -1,4 +1,4 @@
-module github.com/phorne-uncharted/guess-fr
+module github.com/phorne-uncharted/guess-lang
 
 go 1.13
 
