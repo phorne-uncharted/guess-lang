@@ -1,4 +1,4 @@
-module github.com/phorne-uncharted/wordlfr
+module github.com/phorne-uncharted/guess-fr
 
 go 1.13
 
