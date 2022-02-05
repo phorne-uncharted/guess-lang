@@ -1,3 +1,5 @@
 github.com/phorne-uncharted/guess-lang v0.0.0-20220129163518-5248a7c4321f h1:UfmBuG07RqDUM471jSVtjz+StDJ+XJSDTL5g+3l8i+w=
+github.com/phorne-uncharted/guess-lang v0.0.0-20220129165027-736db14f04d1 h1:u5200bMJO7PmRcVd2RlG0K2ikphynIIsv3k8CwwTiHc=
+github.com/phorne-uncharted/guess-lang v0.0.0-20220129165027-736db14f04d1/go.mod h1:PdJyYkITs3ZHY3ooXnNmlt24zLrrnIQdjGObl7jXq4A=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
