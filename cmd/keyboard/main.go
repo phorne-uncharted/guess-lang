@@ -77,7 +77,7 @@ func attemptSolve(g *board.Game) (bool, error) {
 		fmt.Printf(mapResult(c.Result, " "))
 	}
 	fmt.Printf("\t\t")
-	for b := byte(65); b < 91; b++ {
+	for b := 65; b < 91; b++ {
 		fmt.Printf("%v ", mapResult(tk.Letters[b], "X"))
 	}
 	fmt.Printf("\n")

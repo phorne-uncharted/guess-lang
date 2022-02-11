@@ -33,7 +33,6 @@ const (
 func (s *Storage) StoreGame(language string, target string, sourceFile string, maxGuessCount int) (int, error) {
 	sql := fmt.Sprintf("INSERT INTO %s (language, target, source_file, max_guess_count) VALUES ($1, $2, $3, $4) RETURNING game_id;", gameTableName)
 	row := s.conn.QueryRow(context.Background(), sql, language, target, sourceFile, maxGuessCount)
-	fmt.Printf("STORE GAME RES: %v", row)
 
 	var gameID int
 	err := row.Scan(&gameID)

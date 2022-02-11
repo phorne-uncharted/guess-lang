@@ -30,18 +30,18 @@ type Game struct {
 
 // TargetKnowledge summarizes what is known about the target.
 type TargetKnowledge struct {
-	Results []*CheckResult         `json:"results"`
-	Letters map[byte]CompareResult `json:"letters"`
+	Results []*CheckResult        `json:"results"`
+	Letters map[int]CompareResult `json:"letters"`
 }
 
 // NewTargetKnowledge creates a black target knowledge.
 func NewTargetKnowledge() *TargetKnowledge {
 	tk := &TargetKnowledge{
 		Results: []*CheckResult{},
-		Letters: map[byte]CompareResult{},
+		Letters: map[int]CompareResult{},
 	}
 
-	for b := byte(65); b < 91; b++ {
+	for b := 65; b < 91; b++ {
 		tk.Letters[b] = DontKnow
 	}
 
@@ -53,11 +53,11 @@ func (t *TargetKnowledge) AddCheckResult(cr *CheckResult) {
 	t.Results = append(t.Results, cr)
 	for _, r := range cr.Comparison {
 		if r.Result == AtPlace {
-			t.Letters[r.SourceChar] = AtPlace
-		} else if r.Result == InWord && t.Letters[r.SourceChar] == DontKnow {
-			t.Letters[r.SourceChar] = InWord
-		} else if t.Letters[r.SourceChar] == DontKnow {
-			t.Letters[r.SourceChar] = NoMatch
+			t.Letters[int(r.SourceChar)] = AtPlace
+		} else if r.Result == InWord && t.Letters[int(r.SourceChar)] == DontKnow {
+			t.Letters[int(r.SourceChar)] = InWord
+		} else if t.Letters[int(r.SourceChar)] == DontKnow {
+			t.Letters[int(r.SourceChar)] = NoMatch
 		}
 	}
 }
