@@ -7,4 +7,7 @@ export const getters = {
   getGameId(state: GameState): number {
     return state.gameId;
   },
+  getLetterCount(state: GameState): number {
+    return state.letterCount;
+  },
 };

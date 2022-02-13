@@ -22,12 +22,14 @@ export interface GuessResult {
 export interface GameState {
   guessResult: GuessResult;
   gameId: number;
+  letterCount: number;
 }
 
 export const defaultState = (): GameState => {
   return {
     guessResult: null,
     gameId: -1,
+    letterCount: 5,
   };
 };
 

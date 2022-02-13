@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid d-flex join-view">
+    <settings-modal />
     <div class="">
       <div v-if="haveResults">
         <div class="flex-row">
@@ -29,10 +30,15 @@
         <b-spinner v-if="isGuessing" small />
         <span v-else>guess</span>
       </b-button>
-      <b-button variant="primary" @click="startGame" :disabled="isGuessing">
-        <b-spinner v-if="isGuessing" small />
-        <span v-else>restart</span>
-      </b-button>
+      <b-button-group>
+        <b-button variant="primary" @click="startGame" :disabled="isGuessing">
+          <b-spinner v-if="isGuessing" small />
+          <span v-else>restart</span>
+        </b-button>
+        <b-button v-b-modal.settings variant="success" :disabled="isGuessing">
+          <i class="fa fa-cog" aria-hidden="true" />
+        </b-button>
+      </b-button-group>
     </div>
   </div>
 </template>
@@ -41,6 +47,7 @@
 import Vue from "vue";
 import Letter from "../components/Letter.vue";
 import GuessLetter from "../components/GuessLetter.vue";
+import SettingsModal from "../components/SettingsModal.vue";
 import { CheckResult } from "../store/game/index";
 import { actions, getters } from "../store/game/module";
 
@@ -50,6 +57,7 @@ export default Vue.extend({
   components: {
     GuessLetter,
     Letter,
+    SettingsModal,
   },
 
   data() {
@@ -86,7 +94,7 @@ export default Vue.extend({
       await actions.startGame(this.$store, {
         language: "fr",
         maxGuessCount: 15,
-        letterCount: 5,
+        letterCount: getters.getLetterCount(this.$store),
       });
       this.gameId = getters.getGameId(this.$store);
       this.knowledge = null;

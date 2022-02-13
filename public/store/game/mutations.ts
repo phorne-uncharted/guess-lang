@@ -15,6 +15,12 @@ export const mutations = {
     }
     state.gameId = gameId;
   },
+  setLetterCount(state: GameState, letterCount: number) {
+    if (!letterCount) {
+      return;
+    }
+    state.letterCount = letterCount;
+  },
   resetState(state: GameState) {
     Object.assign(state, defaultState());
   },

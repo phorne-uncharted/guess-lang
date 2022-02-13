@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -24,7 +25,13 @@ func main() {
 		return
 	}
 
-	err = selectWords(potentialWords, acceptedWordsRaw, acceptedWordFilename, 5)
+	letterCount, err := getIntFromUser("how many letters should the words have?")
+	if err != nil {
+		fmt.Printf("%+v", err)
+		return
+	}
+
+	err = selectWords(potentialWords, acceptedWordsRaw, acceptedWordFilename, letterCount)
 	if err != nil {
 		fmt.Printf("%+v", err)
 		return
@@ -117,4 +124,15 @@ func captureWord() string {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text()
+}
+
+func getIntFromUser(message string) (int, error) {
+	fmt.Println(message)
+	lengthStr := captureWord()
+	length, err := strconv.Atoi(lengthStr)
+	if err != nil {
+		return 0, errors.Wrapf(err, "unable to read number from user")
+	}
+
+	return length, nil
 }
