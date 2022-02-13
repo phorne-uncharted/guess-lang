@@ -41,7 +41,7 @@ func runGame() {
 			fmt.Printf("%+v", err)
 			return
 		}
-		g, _ := board.NewGame(5, length, "fr.txt")
+		g, _ := board.NewGame(5, length, "fr.txt", "fr.txt")
 		solveWord(g)
 		more, _ = getBoolFromUser("continue playing?")
 	}

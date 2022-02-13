@@ -22,6 +22,7 @@ func StartHandler(storageCtor func() (*storage.Storage, error)) func(http.Respon
 		maxGuessCount := int(params["maxGuessCount"].(float64))
 		lang := params["language"].(string)
 		sourceFile := fmt.Sprintf("public/resource/words/%s.txt", lang)
+		acceptedFile := fmt.Sprintf("public/resource/words/accepted-%s.txt", lang)
 
 		data, err := storageCtor()
 		if err != nil {
@@ -29,13 +30,13 @@ func StartHandler(storageCtor func() (*storage.Storage, error)) func(http.Respon
 			return
 		}
 
-		game, err := board.NewGame(maxGuessCount, letterCount, sourceFile)
+		game, err := board.NewGame(maxGuessCount, letterCount, sourceFile, acceptedFile)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "Unable to start the game"))
 			return
 		}
 
-		gameID, err := data.StoreGame(lang, game.Target(), sourceFile, maxGuessCount)
+		gameID, err := data.StoreGame(lang, game.Target(), sourceFile, acceptedFile, maxGuessCount)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "Unable to store game in storage"))
 			return

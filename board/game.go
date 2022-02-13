@@ -16,6 +16,7 @@ type GameConfig struct {
 	maxGuessCount int
 	letterCount   int
 	sourceFile    string
+	acceptedFile  string
 	language      string
 }
 
@@ -63,17 +64,18 @@ func (t *TargetKnowledge) AddCheckResult(cr *CheckResult) {
 }
 
 // NewGame creates a new game, initializing with a target word and allowed words.
-func NewGame(maxGuessCount int, letterCount int, sourceFile string) (*Game, error) {
+func NewGame(maxGuessCount int, letterCount int, sourceFile string, acceptedFile string) (*Game, error) {
 	rand.Seed(time.Now().UnixNano())
 	game := &Game{
 		config: &GameConfig{
 			maxGuessCount: maxGuessCount,
 			letterCount:   letterCount,
 			sourceFile:    sourceFile,
+			acceptedFile:  acceptedFile,
 		},
 	}
 
-	err := game.Reset(letterCount, sourceFile)
+	err := game.Reset(letterCount, sourceFile, acceptedFile)
 	if err != nil {
 		return nil, err
 	}
@@ -82,17 +84,18 @@ func NewGame(maxGuessCount int, letterCount int, sourceFile string) (*Game, erro
 }
 
 // InitializeGame creates a new game, initializing with a target word and allowed words.
-func InitializeGame(maxGuessCount int, letterCount int, sourceFile string, targetWord string) (*Game, error) {
+func InitializeGame(maxGuessCount int, letterCount int, sourceFile string, acceptedFile string, targetWord string) (*Game, error) {
 	rand.Seed(time.Now().UnixNano())
 	game := &Game{
 		config: &GameConfig{
 			maxGuessCount: maxGuessCount,
 			letterCount:   letterCount,
 			sourceFile:    sourceFile,
+			acceptedFile:  acceptedFile,
 		},
 	}
 
-	err := game.resetWithTarget(letterCount, sourceFile, targetWord)
+	err := game.resetWithTarget(letterCount, sourceFile, acceptedFile, targetWord)
 	if err != nil {
 		return nil, err
 	}
@@ -121,25 +124,31 @@ func (g *Game) Check(word string) (*CheckResult, *TargetKnowledge, error) {
 
 // Reset returns a game to the initial state, selecting a target and reading
 // allowed words.
-func (g *Game) Reset(letterCount int, sourceFile string) error {
-	return g.resetWithTarget(letterCount, sourceFile, "")
+func (g *Game) Reset(letterCount int, sourceFile string, acceptedFile string) error {
+	return g.resetWithTarget(letterCount, sourceFile, acceptedFile, "")
 }
 
 // Reset returns a game to the initial state, selecting a target and reading
 // allowed words.
-func (g *Game) resetWithTarget(letterCount int, sourceFile string, targetWord string) error {
+func (g *Game) resetWithTarget(letterCount int, sourceFile string, acceptedFile string, targetWord string) error {
 	g.guessCount = 0
 	g.config.letterCount = letterCount
 	g.config.sourceFile = sourceFile
+	g.config.acceptedFile = acceptedFile
 
-	words, err := g.readWords()
+	words, err := g.readWords(g.config.sourceFile, g.config.letterCount)
+	if err != nil {
+		return nil
+	}
+
+	targets, err := g.readWords(g.config.acceptedFile, g.config.letterCount)
 	if err != nil {
 		return nil
 	}
 
 	if targetWord == "" {
-		index := int(rand.Float64() * float64(len(words)))
-		targetWord = words[index]
+		index := int(rand.Float64() * float64(len(targets)))
+		targetWord = targets[index]
 	}
 	target, err := NewWord(targetWord)
 	if err != nil {
@@ -159,20 +168,20 @@ func (g *Game) resetWithTarget(letterCount int, sourceFile string, targetWord st
 	return nil
 }
 
-func (g *Game) readWords() ([]string, error) {
-	log.Infof("reading words with %d characters from %s", g.config.letterCount, g.config.sourceFile)
-	wordsRaw, err := readWords(g.config.sourceFile, g.config.letterCount)
+func (g *Game) readWords(filename string, count int) ([]string, error) {
+	log.Infof("reading words with %d characters from %s", count, filename)
+	wordsRaw, err := readWords(filename, count)
 	if err != nil {
 		return nil, err
 	}
 
 	proper := []string{}
 	for _, w := range wordsRaw {
-		if len(w) == g.config.letterCount {
+		if len(w) == count {
 			proper = append(proper, normalizeWord(w))
 		}
 	}
-	log.Infof("read %d words with %d characters", len(proper), g.config.letterCount)
+	log.Infof("read %d words with %d characters", len(proper), count)
 
 	return proper, nil
 }

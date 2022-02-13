@@ -19,6 +19,7 @@ const (
     language TEXT,
     target TEXT,
     source_file TEXT,
+    accepted_file TEXT,
     max_guess_count INT
     );`
 
@@ -30,9 +31,9 @@ const (
 )
 
 // StoreGame stores a game to storage.
-func (s *Storage) StoreGame(language string, target string, sourceFile string, maxGuessCount int) (int, error) {
-	sql := fmt.Sprintf("INSERT INTO %s (language, target, source_file, max_guess_count) VALUES ($1, $2, $3, $4) RETURNING game_id;", gameTableName)
-	row := s.conn.QueryRow(context.Background(), sql, language, target, sourceFile, maxGuessCount)
+func (s *Storage) StoreGame(language string, target string, sourceFile string, acceptedFile string, maxGuessCount int) (int, error) {
+	sql := fmt.Sprintf("INSERT INTO %s (language, target, source_file, accepted_file, max_guess_count) VALUES ($1, $2, $3, $4, $5) RETURNING game_id;", gameTableName)
+	row := s.conn.QueryRow(context.Background(), sql, language, target, sourceFile, acceptedFile, maxGuessCount)
 
 	var gameID int
 	err := row.Scan(&gameID)
@@ -45,7 +46,7 @@ func (s *Storage) StoreGame(language string, target string, sourceFile string, m
 
 // LoadGame loads game data from the database.
 func (s *Storage) LoadGame(gameID int) (*board.Game, error) {
-	sql := fmt.Sprintf("SELECT language, target, source_file, max_guess_count FROM %s WHERE game_id = $%d;", gameTableName, 1)
+	sql := fmt.Sprintf("SELECT language, target, source_file, accepted_file, max_guess_count FROM %s WHERE game_id = $%d;", gameTableName, 1)
 	res, err := s.conn.Query(context.Background(), sql, gameID)
 	if err != nil {
 		return nil, errors.Wrapf(err, "unable to query for game data")
@@ -62,8 +63,9 @@ func parseGame(rows pgx.Rows) (*board.Game, error) {
 	var language string
 	var target string
 	var sourceFile string
+	var acceptedFile string
 	var maxGuessCount int
-	err := rows.Scan(&language, &target, &sourceFile, &maxGuessCount)
+	err := rows.Scan(&language, &target, &sourceFile, &acceptedFile, &maxGuessCount)
 	if err != nil {
 		return nil, errors.Wrapf(err, "unable to read game data")
 	}
@@ -72,5 +74,5 @@ func parseGame(rows pgx.Rows) (*board.Game, error) {
 		return nil, errors.Wrapf(err, "error reading game data")
 	}
 
-	return board.InitializeGame(maxGuessCount, len(target), sourceFile, target)
+	return board.InitializeGame(maxGuessCount, len(target), sourceFile, acceptedFile, target)
 }
