@@ -14,6 +14,7 @@ var (
 // Config represents the application configuration state loaded from env vars.
 type Config struct {
 	AppPort            string  `env:"PORT" envDefault:"8090"`
+	DatabaseURL        string  `env:"DATABASE_URL" envDefault:""`
 	PostgresBatchSize  int     `env:"PG_BATCH_SIZE" envDefault:"1000"`
 	PostgresDatabase   string  `env:"PG_DATABASE" envDefault:"guess"`
 	PostgresHost       string  `env:"PG_HOST" envDefault:"localhost"`

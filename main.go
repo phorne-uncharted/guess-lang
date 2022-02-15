@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/davecgh/go-spew/spew"
+	pool "github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/unchartedsoftware/plog"
 	"github.com/zenazn/goji/graceful"
 	goji "goji.io/v3"
@@ -36,7 +37,13 @@ func main() {
 	}
 	log.Infof("%+v", spew.Sdump(config))
 
-	client := storage.NewClient(config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase)
+	var client func() (*pool.Pool, error)
+	if config.DatabaseURL != "" {
+		client = storage.NewClientFromConnectionString(config.DatabaseURL)
+	} else {
+		client = storage.NewClient(config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase)
+	}
+
 	storageCtor := storage.NewDataStorage(client)
 
 	s, err := storageCtor()

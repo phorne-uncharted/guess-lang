@@ -6,7 +6,8 @@
     "build": "prettier --check public/**/*.{vue,ts} && webpack",
     "watch": "webpack --progress --watch",
     "prettier-check": "prettier --check public/**/**{vue,ts}",
-    "prettier-fix": "prettier --write public/**/**{vue,ts}"
+    "prettier-fix": "prettier --write public/**/**{vue,ts}",
+    "heroku-postbuild": "webpack -p --config ./webpack.prod.config.js --progress"
   },
   "dependencies": {
     "@popperjs/core": "^2.9.2",

@@ -58,22 +58,27 @@ func (s *Storage) InitializeDatabase() error {
 // NewClient instantiates and returns a new postgres client constructor.  Log level is one
 // of none, info, warn, error, debug.
 func NewClient(host string, port int, user string, password string, database string) func() (*pool.Pool, error) {
+	connString := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s pool_max_conns=%d",
+		user, password, host, port, database, 64)
+	return NewClientFromConnectionString(connString)
+}
+
+// NewClientFromConnectionString instantiates and returns a new postgres client constructor.
+func NewClientFromConnectionString(connectionString string) func() (*pool.Pool, error) {
 	return func() (*pool.Pool, error) {
-		endpoint := fmt.Sprintf("%s:%d", host, port)
 
 		mu.Lock()
 		defer mu.Unlock()
 
 		// see if we have an existing connection
-		pgxClient, ok := clients[endpoint]
+		pgxClient, ok := clients[connectionString]
 		if !ok {
-			log.Infof("Creating new Postgres connection to endpoint %s", endpoint)
-			connString := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s pool_max_conns=%d",
-				user, password, host, port, database, 64)
-			poolConfig, err := pool.ParseConfig(connString)
+			poolConfig, err := pool.ParseConfig(connectionString)
 			if err != nil {
 				return nil, errors.Wrap(err, "unable to parse postgres config")
 			}
+			endpoint := fmt.Sprintf("%s:%d", poolConfig.ConnConfig.Host, poolConfig.ConnConfig.Port)
+			log.Infof("Creating new Postgres connection to connection %s", endpoint)
 			poolConfig.LazyConnect = false
 			// BuildStatementCache set to nil prevents the caching of queries
 			// This does slow down performance when multiple of the same query is ran
