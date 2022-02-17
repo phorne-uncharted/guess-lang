@@ -44,6 +44,7 @@ func main() {
 		client = storage.NewClient(config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase)
 	}
 
+	log.Infof("read configuration from the environment")
 	storageCtor := storage.NewDataStorage(client)
 
 	s, err := storageCtor()
@@ -56,6 +57,7 @@ func main() {
 		log.Errorf("%+v", err)
 		os.Exit(1)
 	}
+	log.Infof("connected to postgres database")
 
 	// register routes
 	mux := goji.NewMux()
