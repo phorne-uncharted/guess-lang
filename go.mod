@@ -1,7 +1,7 @@
 // +heroku goVersion 1.17
 module github.com/phorne-uncharted/guess-lang
 
-go 1.17
+go 1.15
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
