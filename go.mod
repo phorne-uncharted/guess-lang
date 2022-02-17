@@ -1,6 +1,6 @@
 module github.com/phorne-uncharted/guess-lang
 
-go 1.13
+go 1.17
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
