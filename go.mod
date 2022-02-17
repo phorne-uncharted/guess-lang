@@ -1,4 +1,4 @@
-// +heroku goVersion 1.17
+// +heroku goVersion 1.15
 module github.com/phorne-uncharted/guess-lang
 
 go 1.15
