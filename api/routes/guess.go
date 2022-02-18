@@ -5,6 +5,7 @@ import (
 
 	"github.com/phorne-uncharted/guess-lang/api/storage"
 	"github.com/pkg/errors"
+	log "github.com/unchartedsoftware/plog"
 )
 
 // GuessHandler processes a guess at the target word and returns the result.
@@ -30,12 +31,14 @@ func GuessHandler(storageCtor func() (*storage.Storage, error)) func(http.Respon
 			handleError(w, errors.Wrap(err, "Unable to load game from storage"))
 			return
 		}
+		log.Infof("loaded game %d from storage", gameID)
 
 		guesses, err := data.LoadGuesses(gameID)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "Unable to load guesses from storage"))
 			return
 		}
+		log.Infof("loaded guesses for game %d from storage", gameID)
 
 		for i := 0; i < len(guesses); i++ {
 			_, _, err = game.Check(guesses[i])
@@ -56,6 +59,7 @@ func GuessHandler(storageCtor func() (*storage.Storage, error)) func(http.Respon
 			handleError(w, errors.Wrap(err, "Unable to store guess in storage"))
 			return
 		}
+		log.Infof("stored guess for game %d from storage", gameID)
 
 		// marshal data
 		err = handleJSON(w, map[string]interface{}{"check": cr, "knowledge": tk})
