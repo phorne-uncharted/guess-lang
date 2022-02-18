@@ -59,7 +59,7 @@ func (s *Storage) InitializeDatabase() error {
 // of none, info, warn, error, debug.
 func NewClient(host string, port int, user string, password string, database string) func() (*pool.Pool, error) {
 	connString := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s pool_max_conns=%d",
-		user, password, host, port, database, 1)
+		user, password, host, port, database, 5)
 	return NewClientFromConnectionString(connString)
 }
 
@@ -80,7 +80,7 @@ func NewClientFromConnectionString(connectionString string) func() (*pool.Pool, 
 			endpoint := fmt.Sprintf("%s:%d", poolConfig.ConnConfig.Host, poolConfig.ConnConfig.Port)
 			log.Infof("Creating new Postgres connection to connection %s", endpoint)
 			poolConfig.LazyConnect = false
-			poolConfig.MaxConns = 1
+			poolConfig.MaxConns = 5
 			// BuildStatementCache set to nil prevents the caching of queries
 			// This does slow down performance when multiple of the same query is ran
 			// However, this also causes issues when types are changing and the caches are not updated
