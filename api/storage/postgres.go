@@ -25,13 +25,8 @@ type Storage struct {
 }
 
 // NewDataStorage returns a constructor for a data storage.
-func NewDataStorage(clientCtor func() (*pool.Pool, error)) func() (*Storage, error) {
+func NewDataStorage(client *pool.Pool) func() (*Storage, error) {
 	return func() (*Storage, error) {
-		client, err := clientCtor()
-		if err != nil {
-			return nil, err
-		}
-
 		return &Storage{
 			conn: client,
 		}, nil

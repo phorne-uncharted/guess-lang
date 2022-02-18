@@ -37,11 +37,17 @@ func main() {
 	}
 	log.Infof("%+v", spew.Sdump(config))
 
-	var client func() (*pool.Pool, error)
+	var clientCtor func() (*pool.Pool, error)
 	if config.DatabaseURL != "" {
-		client = storage.NewClientFromConnectionString(config.DatabaseURL)
+		clientCtor = storage.NewClientFromConnectionString(config.DatabaseURL)
 	} else {
-		client = storage.NewClient(config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase)
+		clientCtor = storage.NewClient(config.PostgresHost, config.PostgresPort, config.PostgresUser, config.PostgresPassword, config.PostgresDatabase)
+	}
+
+	client, err := clientCtor()
+	if err != nil {
+		log.Errorf("%+v", err)
+		os.Exit(1)
 	}
 
 	log.Infof("read configuration from the environment")
