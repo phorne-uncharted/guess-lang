@@ -52,6 +52,11 @@ func main() {
 
 	log.Infof("read configuration from the environment")
 	storageCtor := storage.NewDataStorage(client)
+	stor, err := storageCtor()
+	if err != nil {
+		log.Errorf("%+v", err)
+		os.Exit(1)
+	}
 
 	s, err := storageCtor()
 	if err != nil {
@@ -69,8 +74,8 @@ func main() {
 	mux := goji.NewMux()
 	mux.Use(middleware.Log)
 	mux.Use(middleware.Gzip)
-	registerRoutePost(mux, "/game/start", routes.StartHandler(storageCtor))
-	registerRoutePost(mux, "/game/guess", routes.GuessHandler(storageCtor))
+	registerRoutePost(mux, "/game/start", routes.StartHandler(stor))
+	registerRoutePost(mux, "/game/guess", routes.GuessHandler(stor))
 
 	registerRoute(mux, "/*", routes.FileHandler("./dist"))
 

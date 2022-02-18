@@ -9,7 +9,7 @@ import (
 )
 
 // GuessHandler processes a guess at the target word and returns the result.
-func GuessHandler(storageCtor func() (*storage.Storage, error)) func(http.ResponseWriter, *http.Request) {
+func GuessHandler(storage *storage.Storage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params, err := getPostParameters(r)
 		if err != nil {
@@ -20,20 +20,14 @@ func GuessHandler(storageCtor func() (*storage.Storage, error)) func(http.Respon
 		gameID := int(params["gameId"].(float64))
 		word := params["word"].(string)
 
-		data, err := storageCtor()
-		if err != nil {
-			handleError(w, errors.Wrap(err, "Unable to create storage"))
-			return
-		}
-
-		game, err := data.LoadGame(gameID)
+		game, err := storage.LoadGame(gameID)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "Unable to load game from storage"))
 			return
 		}
 		log.Infof("loaded game %d from storage", gameID)
 
-		guesses, err := data.LoadGuesses(gameID)
+		guesses, err := storage.LoadGuesses(gameID)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "Unable to load guesses from storage"))
 			return
@@ -54,7 +48,7 @@ func GuessHandler(storageCtor func() (*storage.Storage, error)) func(http.Respon
 			return
 		}
 
-		err = data.StoreGuess(gameID, word, len(guesses)+1)
+		err = storage.StoreGuess(gameID, word, len(guesses)+1)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "Unable to store guess in storage"))
 			return

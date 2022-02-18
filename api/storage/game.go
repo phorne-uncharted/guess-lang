@@ -74,5 +74,9 @@ func parseGame(rows pgx.Rows) (*board.Game, error) {
 		return nil, errors.Wrapf(err, "error reading game data")
 	}
 
+	if rows.Next() {
+		return nil, errors.Errorf("duplicate game detected")
+	}
+
 	return board.InitializeGame(maxGuessCount, len(target), sourceFile, acceptedFile, target)
 }
