@@ -55,8 +55,13 @@ func GuessHandler(storage *storage.Storage) func(http.ResponseWriter, *http.Requ
 		}
 		log.Infof("stored guess for game %d from storage", gameID)
 
+		response := map[string]interface{}{"done": cr.IsSolved() || !game.CanGuess(), "solved": cr.IsSolved(), "check": cr, "knowledge": tk}
+		if !game.CanGuess() {
+			response["target"] = game.Target()
+		}
+
 		// marshal data
-		err = handleJSON(w, map[string]interface{}{"check": cr, "knowledge": tk})
+		err = handleJSON(w, response)
 		if err != nil {
 			handleError(w, errors.Wrap(err, "unable to marshal result into JSON"))
 			return

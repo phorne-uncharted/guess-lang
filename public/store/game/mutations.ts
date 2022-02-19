@@ -21,6 +21,12 @@ export const mutations = {
     }
     state.letterCount = letterCount;
   },
+  setGuessCount(state: GameState, guessCount: number) {
+    if (!guessCount) {
+      return;
+    }
+    state.guessCount = guessCount;
+  },
   resetState(state: GameState) {
     Object.assign(state, defaultState());
   },

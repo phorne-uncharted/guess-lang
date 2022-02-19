@@ -17,12 +17,16 @@ export interface Knowledge {
 export interface GuessResult {
   check: CheckResult;
   knowledge: Knowledge;
+  done: boolean;
+  solved: boolean;
+  target: string;
 }
 
 export interface GameState {
   guessResult: GuessResult;
   gameId: number;
   letterCount: number;
+  guessCount: number;
 }
 
 export const defaultState = (): GameState => {
@@ -30,6 +34,7 @@ export const defaultState = (): GameState => {
     guessResult: null,
     gameId: -1,
     letterCount: 5,
+    guessCount: 6,
   };
 };
 

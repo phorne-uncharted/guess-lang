@@ -9,8 +9,18 @@
               <guess-letter :result="check" />
             </div>
           </div>
+          <div v-if="solved">
+            <span class="checkmark">
+              <div class="checkmark_stem"></div>
+              <div class="checkmark_kick"></div>
+            </span>
+          </div>
+          <div v-if="failed">
+            {{ target }}
+            <div class="failure"></div>
+          </div>
         </div>
-        <div>
+        <div class="alphabet">
           <div
             v-for="(res, letter) in knowledge.knowledge.letters"
             class="letter"
@@ -23,10 +33,14 @@
       </div>
       <form ref="guessInputForm">
         <b-form-group label-for="guess-input">
-          <b-form-input id="guess-input" v-model="guess" />
+          <b-form-input
+            id="guess-input"
+            v-model="guess"
+            @keyup.enter="guessWord"
+          />
         </b-form-group>
       </form>
-      <b-button variant="primary" @click="guessWord" :disabled="isGuessing">
+      <b-button variant="primary" @click="guessWord" :disabled="!canGuess">
         <b-spinner v-if="isGuessing" small />
         <span v-else>guess</span>
       </b-button>
@@ -76,6 +90,30 @@ export default Vue.extend({
     knowledgeResults(): CheckResult[] {
       return this.knowledge.results;
     },
+    solved(): boolean {
+      return this.haveResults && getters.getGuessResult(this.$store).solved;
+    },
+    canGuess(): boolean {
+      return (
+        !this.isGuessing &&
+        ((this.haveResults && !getters.getGuessResult(this.$store).done) ||
+          !this.haveResults)
+      );
+    },
+    failed(): boolean {
+      return (
+        this.haveResults &&
+        getters.getGuessResult(this.$store).done &&
+        !this.solved
+      );
+    },
+    target(): string {
+      if (this.failed) {
+        return getters.getGuessResult(this.$store).target;
+      }
+
+      return "";
+    },
   },
 
   methods: {
@@ -93,7 +131,7 @@ export default Vue.extend({
       this.isGuessing = true;
       await actions.startGame(this.$store, {
         language: "fr",
-        maxGuessCount: 15,
+        maxGuessCount: getters.getGuessCount(this.$store),
         letterCount: getters.getLetterCount(this.$store),
       });
       this.gameId = getters.getGameId(this.$store);
@@ -116,5 +154,56 @@ export default Vue.extend({
 
 .letter {
   display: table-cell;
+  border-style: double;
+}
+
+.alphabet {
+  margin-top: 20px;
+}
+
+.checkmark {
+  display: inline-block;
+  width: 66px;
+  height: 66px;
+  -ms-transform: rotate(45deg); /* IE 9 */
+  -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+  transform: rotate(45deg);
+}
+
+.checkmark_stem {
+  position: absolute;
+  width: 9px;
+  height: 27px;
+  background-color: #6aaa64;
+  left: 33px;
+  top: 18px;
+}
+
+.checkmark_kick {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background-color: #6aaa64;
+  left: 24px;
+  top: 36px;
+}
+
+.failure {
+  height: 100px;
+  width: 100px;
+  border-radius: 5px;
+  position: relative;
+  &:after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: "\274c";
+    font-size: 60px;
+    color: #fff;
+    line-height: 100px;
+    text-align: center;
+  }
 }
 </style>

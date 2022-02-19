@@ -10,4 +10,7 @@ export const getters = {
   getLetterCount(state: GameState): number {
     return state.letterCount;
   },
+  getGuessCount(state: GameState): number {
+    return state.guessCount;
+  },
 };

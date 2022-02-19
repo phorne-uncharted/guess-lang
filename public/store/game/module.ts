@@ -21,6 +21,7 @@ const { commit, read, dispatch } = getStoreAccessors<GameState, GuessState>(
 export const getters = {
   getGameId: read(moduleGetters.getGameId),
   getLetterCount: read(moduleGetters.getLetterCount),
+  getGuessCount: read(moduleGetters.getGuessCount),
   getGuessResult: read(moduleGetters.getGuessResult),
 };
 
@@ -35,4 +36,5 @@ export const mutations = {
   setGuessResult: commit(moduleMutations.setGuessResult),
   setGameId: commit(moduleMutations.setGameId),
   setLetterCount: commit(moduleMutations.setLetterCount),
+  setGuessCount: commit(moduleMutations.setGuessCount),
 };

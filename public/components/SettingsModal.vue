@@ -19,6 +19,20 @@
         max="20"
       />
     </b-form-group>
+    <b-form-group
+      id="guess-count"
+      label="Number of guesses allowed:"
+      label-for="guess-count-spinner"
+      description="Sets the number of guesses allowed."
+    >
+      <b-form-spinbutton
+        id="guess-count-spinner"
+        v-model="guessCount"
+        inline
+        min="1"
+        max="15"
+      />
+    </b-form-group>
   </b-modal>
 </template>
 
@@ -32,12 +46,14 @@ export default Vue.extend({
   data() {
     return {
       letterCount: getters.getLetterCount(this.$store) || 5,
+      guessCount: getters.getGuessCount(this.$store) || 6,
     };
   },
 
   methods: {
     handleOk() {
       mutations.setLetterCount(this.$store, this.letterCount);
+      mutations.setGuessCount(this.$store, this.guessCount);
     },
   },
 });

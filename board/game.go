@@ -36,9 +36,9 @@ type TargetKnowledge struct {
 }
 
 // NewTargetKnowledge creates a black target knowledge.
-func NewTargetKnowledge() *TargetKnowledge {
+func NewTargetKnowledge(guessCount int) *TargetKnowledge {
 	tk := &TargetKnowledge{
-		Results: []*CheckResult{},
+		Results: make([]*CheckResult, guessCount),
 		Letters: map[int]CompareResult{},
 	}
 
@@ -51,7 +51,15 @@ func NewTargetKnowledge() *TargetKnowledge {
 
 // AddCheckResult adds a result to the target target knowlegde.
 func (t *TargetKnowledge) AddCheckResult(cr *CheckResult) {
-	t.Results = append(t.Results, cr)
+	guessCount := 0
+	for guessCount < len(t.Results) {
+		if t.Results[guessCount] == nil {
+			break
+		}
+		guessCount = guessCount + 1
+	}
+
+	t.Results[guessCount] = cr
 	for _, r := range cr.Comparison {
 		if r.Result == AtPlace {
 			t.Letters[int(r.SourceChar)] = AtPlace
@@ -73,6 +81,7 @@ func NewGame(maxGuessCount int, letterCount int, sourceFile string, acceptedFile
 			sourceFile:    sourceFile,
 			acceptedFile:  acceptedFile,
 		},
+		knowledge: NewTargetKnowledge(maxGuessCount),
 	}
 
 	err := game.Reset(letterCount, sourceFile, acceptedFile)
@@ -108,8 +117,17 @@ func (g *Game) Target() string {
 	return g.target.word
 }
 
+// CanGuess returns true if a guess can be made.
+func (g *Game) CanGuess() bool {
+	return g.knowledge.Results[g.config.maxGuessCount-1] == nil
+}
+
 // Check checks if a supplied word matches the target.
 func (g *Game) Check(word string) (*CheckResult, *TargetKnowledge, error) {
+	if g.knowledge.Results[g.config.maxGuessCount-1] != nil {
+		return nil, nil, errors.Errorf("maximum number of guesses reached")
+	}
+
 	word = normalizeWord(word)
 	res, err := g.target.Check(word)
 	if err != nil {
@@ -161,7 +179,7 @@ func (g *Game) resetWithTarget(letterCount int, sourceFile string, acceptedFile 
 		allowed[w] = true
 	}
 	g.allowedWords = allowed
-	g.knowledge = NewTargetKnowledge()
+	g.knowledge = NewTargetKnowledge(g.config.maxGuessCount)
 	//fmt.Printf("TARGET: %v\n", g.target)
 	fmt.Printf("LOADED %v WORDS OF LENGTH %v\n", len(allowed), g.config.letterCount)
 
