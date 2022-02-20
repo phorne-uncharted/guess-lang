@@ -2,8 +2,7 @@
   <div>
     <div v-for="res in result.comparison" class="letter">
       <letter
-        :source-char="res.sourceChar"
-        :result="res.result"
+        :source-char="parseCharacterCompare(res)"
         :barNotMatched="false"
       />
     </div>
@@ -15,6 +14,7 @@ import Vue from "vue";
 import Letter from "../components/Letter.vue";
 import { CheckResult } from "../store/game/index";
 import { actions, getters } from "../store/game/module";
+import { CharacterCompare } from "../store/game/index";
 
 export default Vue.extend({
   name: "GuessLetter",
@@ -27,6 +27,13 @@ export default Vue.extend({
     result: {
       type: Object as () => CheckResult,
       default: null,
+    },
+  },
+  methods: {
+    parseCharacterCompare(res: CharacterCompare): CharacterCompare {
+      res.parsedChar = String.fromCharCode(res.sourceChar);
+
+      return res;
     },
   },
 });

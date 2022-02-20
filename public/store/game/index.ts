@@ -2,6 +2,7 @@ export interface CharacterCompare {
   index: number;
   sourceChar: number;
   result: number;
+  parsedChar: string;
 }
 
 export interface CheckResult {

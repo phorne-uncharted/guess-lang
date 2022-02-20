@@ -7,18 +7,15 @@
 <script lang="ts">
 import _ from "lodash";
 import Vue from "vue";
+import { CharacterCompare } from "../store/game/index";
 
 export default Vue.extend({
   name: "letter",
 
   props: {
     sourceChar: {
-      type: Number,
-      default: 0,
-    },
-    result: {
-      type: Number,
-      default: 0,
+      type: Object as () => CharacterCompare,
+      default: null,
     },
     barNotMatched: {
       type: Boolean,
@@ -28,14 +25,14 @@ export default Vue.extend({
 
   methods: {
     displayCharacter(): string {
-      return String.fromCharCode(this.sourceChar);
+      return this.sourceChar.parsedChar;
     },
     getClass(): string {
-      if (this.result == 1 && this.barNotMatched) {
+      if (this.sourceChar.result == 1 && this.barNotMatched) {
         return "not-matched letter";
-      } else if (this.result == 2) {
+      } else if (this.sourceChar.result == 2) {
         return "in-word letter";
-      } else if (this.result == 3) {
+      } else if (this.sourceChar.result == 3) {
         return "at-place letter";
       }
 

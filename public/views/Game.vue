@@ -1,7 +1,8 @@
 <template>
-  <div class="container-fluid d-flex join-view">
+  <div class="container-fluid d-flex game">
     <settings-modal />
     <div class="">
+      <div class="title">Guess The Word ({{ letterCount }} Letters)</div>
       <div v-if="haveResults">
         <div class="flex-row">
           <div v-for="check in knowledge.knowledge.results">
@@ -21,14 +22,7 @@
           </div>
         </div>
         <div class="alphabet">
-          <div
-            v-for="(res, letter) in knowledge.knowledge.letters"
-            class="letter"
-          >
-            <div>
-              <letter :source-char="parseInt(letter)" :result="res" />
-            </div>
-          </div>
+          <keyboard :letters="knowledge.knowledge.letters" />
         </div>
       </div>
       <form ref="guessInputForm">
@@ -61,6 +55,7 @@
 import Vue from "vue";
 import Letter from "../components/Letter.vue";
 import GuessLetter from "../components/GuessLetter.vue";
+import Keyboard from "../components/Keyboard.vue";
 import SettingsModal from "../components/SettingsModal.vue";
 import { CheckResult } from "../store/game/index";
 import { actions, getters } from "../store/game/module";
@@ -72,6 +67,7 @@ export default Vue.extend({
     GuessLetter,
     Letter,
     SettingsModal,
+    Keyboard,
   },
 
   data() {
@@ -114,6 +110,9 @@ export default Vue.extend({
 
       return "";
     },
+    letterCount(): number {
+      return getters.getLetterCount(this.$store);
+    },
   },
 
   methods: {
@@ -150,6 +149,10 @@ export default Vue.extend({
 .header-label {
   padding: 1rem 0 0.5rem 0;
   font-weight: bold;
+}
+
+.game {
+  justify-content: center;
 }
 
 .letter {
