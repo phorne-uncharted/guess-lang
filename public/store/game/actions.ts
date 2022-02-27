@@ -20,6 +20,7 @@ export const actions = {
         letterCount: args.letterCount,
       });
       mutations.setGameId(context, response.data.gameId);
+      mutations.setGuessResult(context, response.data.game);
     } catch (error) {
       console.error(error);
       mutations.setGameId(context, -1);

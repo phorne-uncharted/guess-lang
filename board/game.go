@@ -117,6 +117,11 @@ func (g *Game) Target() string {
 	return g.target.word
 }
 
+// Knowledge gets the knowledge of the game.
+func (g *Game) Knowledge() *TargetKnowledge {
+	return g.knowledge
+}
+
 // CanGuess returns true if a guess can be made.
 func (g *Game) CanGuess() bool {
 	return g.knowledge.Results[g.config.maxGuessCount-1] == nil

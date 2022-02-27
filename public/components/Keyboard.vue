@@ -1,8 +1,8 @@
 <template>
   <div>
-    <letter-row :letters="row1" />
-    <letter-row :letters="row2" />
-    <letter-row :letters="row3" />
+    <letter-row :letters="row1" @letterclicked="letterClicked" />
+    <letter-row :letters="row2" @letterclicked="letterClicked" />
+    <letter-row :letters="row3" @letterclicked="letterClicked" />
   </div>
 </template>
 
@@ -70,6 +70,12 @@ export default Vue.extend({
         }
       }
       return row;
+    },
+  },
+
+  methods: {
+    letterClicked(letter: string) {
+      this.$emit("letterclicked", letter);
     },
   },
 });

@@ -22,7 +22,10 @@
           </div>
         </div>
         <div class="alphabet">
-          <keyboard :letters="knowledge.knowledge.letters" />
+          <keyboard
+            :letters="knowledge.knowledge.letters"
+            @letterclicked="letterClicked"
+          />
         </div>
       </div>
       <form ref="guessInputForm">
@@ -59,6 +62,7 @@ import Keyboard from "../components/Keyboard.vue";
 import SettingsModal from "../components/SettingsModal.vue";
 import { CheckResult } from "../store/game/index";
 import { actions, getters } from "../store/game/module";
+import { defaultGuessResult } from "../util/knowledge";
 
 export default Vue.extend({
   name: "game",
@@ -82,9 +86,6 @@ export default Vue.extend({
   computed: {
     haveResults(): boolean {
       return this.knowledge != null;
-    },
-    knowledgeResults(): CheckResult[] {
-      return this.knowledge.results;
     },
     solved(): boolean {
       return this.haveResults && getters.getGuessResult(this.$store).solved;
@@ -122,10 +123,15 @@ export default Vue.extend({
         word: this.guess,
         gameId: this.gameId,
       });
-      this.knowledge = getters.getGuessResult(this.$store);
+      this.knowledge = defaultGuessResult(
+        getters.getGuessResult(this.$store),
+        getters.getGuessCount(this.$store),
+        getters.getLetterCount(this.$store)
+      );
       this.guess = "";
       this.isGuessing = false;
     },
+
     async startGame() {
       this.isGuessing = true;
       await actions.startGame(this.$store, {
@@ -134,8 +140,17 @@ export default Vue.extend({
         letterCount: getters.getLetterCount(this.$store),
       });
       this.gameId = getters.getGameId(this.$store);
-      this.knowledge = null;
+
+      this.knowledge = defaultGuessResult(
+        getters.getGuessResult(this.$store),
+        getters.getGuessCount(this.$store),
+        getters.getLetterCount(this.$store)
+      );
       this.isGuessing = false;
+    },
+
+    letterClicked(letter: string) {
+      this.guess = this.guess + letter;
     },
   },
 
@@ -157,11 +172,13 @@ export default Vue.extend({
 
 .letter {
   display: table-cell;
-  border-style: double;
+  min-width: 35px;
+  min-height: 45px;
 }
 
 .alphabet {
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .checkmark {

@@ -36,8 +36,10 @@ func StartHandler(storage *storage.Storage) func(http.ResponseWriter, *http.Requ
 			return
 		}
 
+		response := map[string]interface{}{"done": false, "solved": false, "knowledge": game.Knowledge()}
+
 		// marshal data
-		err = handleJSON(w, map[string]interface{}{"gameId": gameID})
+		err = handleJSON(w, map[string]interface{}{"gameId": gameID, "game": response})
 		if err != nil {
 			handleError(w, errors.Wrap(err, "unable to marshal result into JSON"))
 			return

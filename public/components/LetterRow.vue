@@ -2,7 +2,7 @@
   <div>
     <div v-for="l in letters" class="letter">
       <div>
-        <letter :source-char="l" />
+        <letter :source-char="l" @letterclicked="letterClicked" />
       </div>
     </div>
   </div>
@@ -24,6 +24,12 @@ export default Vue.extend({
     letters: {
       type: Object as () => CharacterCompare[],
       default: null,
+    },
+  },
+
+  methods: {
+    letterClicked(letter: string) {
+      this.$emit("letterclicked", letter);
     },
   },
 });

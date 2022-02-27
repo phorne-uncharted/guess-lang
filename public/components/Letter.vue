@@ -1,7 +1,7 @@
 <template>
-  <div v-bind:class="getClass()">
+  <b-button v-bind:class="getClass()" @click="letterClicked">
     {{ displayCharacter() }}
-  </div>
+  </b-button>
 </template>
 
 <script lang="ts">
@@ -38,6 +38,10 @@ export default Vue.extend({
 
       return "letter";
     },
+
+    letterClicked() {
+      this.$emit("letterclicked", this.sourceChar.parsedChar);
+    },
   },
 });
 </script>
@@ -50,10 +54,13 @@ export default Vue.extend({
   background-color: #c9b458;
 }
 .not-matched {
-  text-decoration: line-through;
+  background-color: #787c7e;
 }
 .letter {
   padding: 10px;
   font-weight: bold;
+  min-width: 35px;
+  min-height: 45px;
+  margin: 3px;
 }
 </style>
