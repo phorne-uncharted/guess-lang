@@ -5,6 +5,7 @@ import { gameGetters } from "..";
 import store, { GuessState } from "../store";
 import { getters, mutations } from "./module";
 import { GameState } from "./index";
+import { defaultGuessResult } from "../../util/knowledge";
 
 export type GameContext = ActionContext<GameState, GuessState>;
 
@@ -20,7 +21,14 @@ export const actions = {
         letterCount: args.letterCount,
       });
       mutations.setGameId(context, response.data.gameId);
-      mutations.setGuessResult(context, response.data.game);
+      mutations.setGuessResult(
+        context,
+        defaultGuessResult(
+          response.data.game,
+          args.maxGuessCount,
+          args.letterCount
+        )
+      );
     } catch (error) {
       console.error(error);
       mutations.setGameId(context, -1);
@@ -28,17 +36,25 @@ export const actions = {
   },
   async guessWord(
     context: GameContext,
-    args: { word: string; gameId: number }
+    args: {
+      word: string;
+      gameId: number;
+      maxGuessCount: number;
+      letterCount: number;
+    }
   ): Promise<void> {
     try {
       const response = await axios.post(`/game/guess`, {
         word: args.word,
         gameId: args.gameId,
       });
-      mutations.setGuessResult(context, response.data);
+      mutations.setGuessResult(
+        context,
+        defaultGuessResult(response.data, args.maxGuessCount, args.letterCount)
+      );
+      mutations.setCurrentGuess(context, getters.getCurrentGuess(context) + 1);
     } catch (error) {
-      console.error(error);
-      mutations.setGuessResult(context, null);
+      console.log(error);
     }
   },
 };

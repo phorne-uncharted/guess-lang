@@ -23,6 +23,7 @@ export const getters = {
   getLetterCount: read(moduleGetters.getLetterCount),
   getGuessCount: read(moduleGetters.getGuessCount),
   getGuessResult: read(moduleGetters.getGuessResult),
+  getCurrentGuess: read(moduleGetters.getCurrentGuess),
 };
 
 // Typed actions
@@ -37,4 +38,7 @@ export const mutations = {
   setGameId: commit(moduleMutations.setGameId),
   setLetterCount: commit(moduleMutations.setLetterCount),
   setGuessCount: commit(moduleMutations.setGuessCount),
+  setCurrentGuess: commit(moduleMutations.setCurrentGuess),
+  updateGuess: commit(moduleMutations.updateGuess),
+  deleteLetter: commit(moduleMutations.deleteLetter),
 };

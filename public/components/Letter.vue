@@ -40,7 +40,13 @@ export default Vue.extend({
     },
 
     letterClicked() {
-      this.$emit("letterclicked", this.sourceChar.parsedChar);
+      if (this.sourceChar.parsedChar == "Del") {
+        this.$emit("deleteclicked");
+      } else if (this.sourceChar.parsedChar == "Enter") {
+        this.$emit("enterclicked");
+      } else {
+        this.$emit("letterclicked", this.sourceChar.parsedChar);
+      }
     },
   },
 });

@@ -2,7 +2,12 @@
   <div>
     <letter-row :letters="row1" @letterclicked="letterClicked" />
     <letter-row :letters="row2" @letterclicked="letterClicked" />
-    <letter-row :letters="row3" @letterclicked="letterClicked" />
+    <letter-row
+      :letters="row3"
+      @letterclicked="letterClicked"
+      @deleteclicked="deleteClicked"
+      @enterclicked="enterClicked"
+    />
   </div>
 </template>
 
@@ -69,6 +74,22 @@ export default Vue.extend({
           };
         }
       }
+
+      const delKey = getLetterInfo(100);
+      row[delKey.col] = {
+        index: delKey.col,
+        sourceChar: delKey.index,
+        result: 0,
+        parsedChar: delKey.key,
+      };
+
+      const enterKey = getLetterInfo(101);
+      row[enterKey.col] = {
+        index: enterKey.col,
+        sourceChar: enterKey.index,
+        result: 0,
+        parsedChar: enterKey.key,
+      };
       return row;
     },
   },
@@ -76,6 +97,12 @@ export default Vue.extend({
   methods: {
     letterClicked(letter: string) {
       this.$emit("letterclicked", letter);
+    },
+    deleteClicked() {
+      this.$emit("deleteclicked");
+    },
+    enterClicked() {
+      this.$emit("enterclicked");
     },
   },
 });

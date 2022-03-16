@@ -25,10 +25,12 @@
           <keyboard
             :letters="knowledge.knowledge.letters"
             @letterclicked="letterClicked"
+            @deleteclicked="deleteClicked"
+            @enterclicked="enterClicked"
           />
         </div>
       </div>
-      <form ref="guessInputForm">
+      <!--<form ref="guessInputForm">
         <b-form-group label-for="guess-input">
           <b-form-input
             id="guess-input"
@@ -36,7 +38,7 @@
             @keyup.enter="guessWord"
           />
         </b-form-group>
-      </form>
+      </form> -->
       <b-button variant="primary" @click="guessWord" :disabled="!canGuess">
         <b-spinner v-if="isGuessing" small />
         <span v-else>guess</span>
@@ -60,8 +62,8 @@ import Letter from "../components/Letter.vue";
 import GuessLetter from "../components/GuessLetter.vue";
 import Keyboard from "../components/Keyboard.vue";
 import SettingsModal from "../components/SettingsModal.vue";
-import { CheckResult } from "../store/game/index";
-import { actions, getters } from "../store/game/module";
+import { GuessResult, CheckResult } from "../store/game/index";
+import { actions, getters, mutations } from "../store/game/module";
 import { defaultGuessResult } from "../util/knowledge";
 
 export default Vue.extend({
@@ -122,18 +124,23 @@ export default Vue.extend({
       await actions.guessWord(this.$store, {
         word: this.guess,
         gameId: this.gameId,
+        maxGuessCount: getters.getGuessCount(this.$store),
+        letterCount: getters.getLetterCount(this.$store),
       });
-      this.knowledge = defaultGuessResult(
-        getters.getGuessResult(this.$store),
-        getters.getGuessCount(this.$store),
-        getters.getLetterCount(this.$store)
-      );
-      this.guess = "";
+      this.knowledge = getters.getGuessResult(this.$store);
+      const currentGuess = getters.getCurrentGuess(this.$store);
+      if (
+        currentGuess < getters.getGuessCount(this.$store) &&
+        this.knowledge.knowledge.results[currentGuess].word[0] == " "
+      ) {
+        this.guess = "";
+      }
       this.isGuessing = false;
     },
 
     async startGame() {
       this.isGuessing = true;
+      this.guess = "";
       await actions.startGame(this.$store, {
         language: "fr",
         maxGuessCount: getters.getGuessCount(this.$store),
@@ -141,16 +148,34 @@ export default Vue.extend({
       });
       this.gameId = getters.getGameId(this.$store);
 
-      this.knowledge = defaultGuessResult(
-        getters.getGuessResult(this.$store),
-        getters.getGuessCount(this.$store),
-        getters.getLetterCount(this.$store)
-      );
+      this.knowledge = getters.getGuessResult(this.$store);
+      mutations.setCurrentGuess(this.$store, 0);
       this.isGuessing = false;
     },
 
     letterClicked(letter: string) {
-      this.guess = this.guess + letter;
+      if (this.guess.length < getters.getLetterCount(this.$store)) {
+        this.guess = this.guess + letter;
+        mutations.updateGuess(this.$store, {
+          guessIndex: getters.getCurrentGuess(this.$store),
+          letterIndex: this.guess.length - 1,
+          letter: letter,
+        });
+        this.knowledge = getters.getGuessResult(this.$store);
+      }
+    },
+
+    deleteClicked() {
+      this.guess = this.guess.substr(0, this.guess.length - 1);
+      mutations.deleteLetter(this.$store, {
+        guessIndex: getters.getCurrentGuess(this.$store),
+        letterIndex: this.guess.length,
+      });
+      this.knowledge = getters.getGuessResult(this.$store);
+    },
+
+    enterClicked() {
+      this.guessWord();
     },
   },
 

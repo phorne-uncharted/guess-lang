@@ -13,4 +13,7 @@ export const getters = {
   getGuessCount(state: GameState): number {
     return state.guessCount;
   },
+  getCurrentGuess(state: GameState): number {
+    return state.currentGuess;
+  },
 };

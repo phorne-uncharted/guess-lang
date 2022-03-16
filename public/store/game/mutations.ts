@@ -27,6 +27,75 @@ export const mutations = {
     }
     state.guessCount = guessCount;
   },
+  setCurrentGuess(state: GameState, guess: number) {
+    state.currentGuess = guess;
+  },
+
+  updateGuess(
+    state: GameState,
+    args: { guessIndex: number; letterIndex: number; letter: string }
+  ) {
+    const code = args.letter.charCodeAt(0);
+    Vue.set(
+      state.guessResult.knowledge.results[args.guessIndex],
+      "word",
+      state.guessResult.knowledge.results[args.guessIndex].word.substr(
+        0,
+        args.letterIndex
+      ) +
+        args.letter +
+        state.guessResult.knowledge.results[args.guessIndex].word.substr(
+          args.letterIndex + 1
+        )
+    );
+    Vue.set(
+      state.guessResult.knowledge.results[args.guessIndex].comparison,
+      args.letterIndex,
+      {
+        sourceChar: code,
+        index: args.letterIndex,
+        result: 0,
+        parsedChar: args.letter,
+      }
+    );
+
+    Vue.set(
+      state.guessResult.knowledge.results,
+      args.guessIndex,
+      state.guessResult.knowledge.results[args.guessIndex]
+    );
+  },
+
+  deleteLetter(
+    state: GameState,
+    args: { guessIndex: number; letterIndex: number }
+  ) {
+    Vue.set(
+      state.guessResult.knowledge.results[args.guessIndex],
+      "word",
+      state.guessResult.knowledge.results[args.guessIndex].word.substr(
+        0,
+        args.letterIndex
+      )
+    );
+    Vue.set(
+      state.guessResult.knowledge.results[args.guessIndex].comparison,
+      args.letterIndex,
+      {
+        sourceChar: 32,
+        index: args.letterIndex,
+        result: 0,
+        parsedChar: " ",
+      }
+    );
+
+    Vue.set(
+      state.guessResult.knowledge.results,
+      args.guessIndex,
+      state.guessResult.knowledge.results[args.guessIndex]
+    );
+  },
+
   resetState(state: GameState) {
     Object.assign(state, defaultState());
   },

@@ -28,6 +28,7 @@ export interface GameState {
   gameId: number;
   letterCount: number;
   guessCount: number;
+  currentGuess: number;
 }
 
 export const defaultState = (): GameState => {
@@ -36,6 +37,7 @@ export const defaultState = (): GameState => {
     gameId: -1,
     letterCount: 5,
     guessCount: 6,
+    currentGuess: 0,
   };
 };
 

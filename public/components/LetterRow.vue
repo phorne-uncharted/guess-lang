@@ -2,7 +2,12 @@
   <div>
     <div v-for="l in letters" class="letter">
       <div>
-        <letter :source-char="l" @letterclicked="letterClicked" />
+        <letter
+          :source-char="l"
+          @letterclicked="letterClicked"
+          @deleteclicked="deleteClicked"
+          @enterclicked="enterClicked"
+        />
       </div>
     </div>
   </div>
@@ -30,6 +35,12 @@ export default Vue.extend({
   methods: {
     letterClicked(letter: string) {
       this.$emit("letterclicked", letter);
+    },
+    deleteClicked() {
+      this.$emit("deleteclicked");
+    },
+    enterClicked() {
+      this.$emit("enterclicked");
     },
   },
 });
